@@ -3,435 +3,515 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TP : Injection SQL & Mutillidae II</title>
+    <title>TP : Injection SQL - Guide Complet</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --primary: #2563eb;
-            --secondary: #1e293b;
-            --accent: #f59e0b;
-            --danger: #ef4444;
-            --success: #10b981;
-            --bg-body: #f8fafc;
+            --primary: #2563eb;       /* Bleu moderne */
+            --secondary: #0f172a;     /* Bleu nuit profond */
+            --accent: #f59e0b;        /* Orange pour les alertes */
+            --danger: #ef4444;        /* Rouge erreur */
+            --success: #10b981;       /* Vert succès */
+            --bg-body: #f1f5f9;       /* Gris très clair */
             --bg-card: #ffffff;
-            --text-main: #334155;
-            --code-bg: #0f172a;
+            --font-main: 'Inter', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: var(--font-main);
             background-color: var(--bg-body);
-            color: var(--text-main);
-            line-height: 1.7;
+            color: #334155;
             margin: 0;
-            display: flex;
+            line-height: 1.6;
         }
 
-        /* Sidebar Navigation */
-        .sidebar {
-            width: 250px;
-            background-color: var(--secondary);
-            color: white;
-            height: 100vh;
-            position: fixed;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
+        /* --- LAYOUT --- */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
         }
 
-        .sidebar h2 {
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-            color: var(--accent);
-            border-bottom: 2px solid rgba(255,255,255,0.1);
-            padding-bottom: 10px;
-        }
-
-        .nav-links {
-            list-style: none;
-            padding: 0;
-        }
-
-        .nav-links li {
-            margin-bottom: 15px;
-        }
-
-        .nav-links a {
-            color: #cbd5e1;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: 0.3s;
-            font-size: 0.95rem;
-        }
-
-        .nav-links a:hover {
-            color: white;
-            transform: translateX(5px);
-        }
-
-        .nav-links a.active {
-            color: var(--accent);
-            font-weight: bold;
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 250px;
-            padding: 40px;
-            width: 100%;
-            max-width: 1200px;
-        }
-
-        /* Header */
+        /* --- HEADER --- */
         header {
-            background: linear-gradient(135deg, #1e293b, #334155);
+            background: linear-gradient(135deg, var(--secondary) 0%, #1e293b 100%);
             color: white;
-            padding: 40px;
-            border-radius: 12px;
-            margin-bottom: 40px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            padding: 60px 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 50px;
+            text-align: center;
         }
 
-        h1 { margin: 0; font-size: 2.5rem; letter-spacing: -1px; }
-        .subtitle { opacity: 0.8; margin-top: 10px; font-size: 1.1rem; }
-
-        /* Cards & Sections */
-        section {
-            background: var(--bg-card);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            margin-bottom: 40px;
-            border-top: 4px solid var(--primary);
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
         }
 
-        h2 { color: var(--secondary); margin-top: 0; display: flex; align-items: center; gap: 10px; }
-        h3 { color: var(--primary); margin-top: 25px; font-size: 1.3rem; }
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-top: 15px;
+            color: #cbd5e1;
+        }
 
-        /* Buttons */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background-color: var(--primary);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 6px;
+        .badges {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* --- NAVIGATION --- */
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: white;
+            color: var(--secondary);
+            padding: 12px 20px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
-            transition: 0.2s;
-            border: none;
-            cursor: pointer;
-            margin-right: 10px;
-            margin-bottom: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .btn:hover { background-color: #1d4ed8; }
-        .btn-download { background-color: var(--success); }
-        .btn-download:hover { background-color: #059669; }
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
 
-        /* Code Blocks */
+        /* --- SECTIONS --- */
+        section {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-top: 5px solid var(--primary);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--secondary);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 15px;
+        }
+
+        h3 {
+            color: var(--primary);
+            margin-top: 30px;
+            font-size: 1.3rem;
+        }
+
+        /* --- BUTTONS DOWNLOAD --- */
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .dl-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .dl-card:hover { border-color: var(--primary); transform: translateY(-3px); }
+
+        .btn-action {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        .btn-action:hover { background: #1d4ed8; }
+
+        /* --- CODE BLOCKS --- */
         pre {
-            background-color: var(--code-bg);
-            color: #e2e8f0;
+            background: #1e1e1e;
+            color: #d4d4d4;
             padding: 20px;
             border-radius: 8px;
+            font-family: var(--font-code);
             overflow-x: auto;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
-            border: 1px solid #334155;
+            border: 1px solid #333;
         }
 
-        code { font-family: 'JetBrains Mono', monospace; color: var(--accent); background: #f1f5f9; padding: 2px 5px; border-radius: 4px; }
-        pre code { background: transparent; padding: 0; color: inherit; }
+        code {
+            font-family: var(--font-code);
+            background: #e2e8f0;
+            color: #c026d3;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        pre code { background: transparent; color: inherit; padding: 0; }
 
-        /* Steps */
+        /* --- STEPS --- */
         .step {
             display: flex;
             gap: 20px;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
-
-        .step-number {
+        .step-num {
             background: var(--primary);
             color: white;
-            width: 35px;
-            height: 35px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
+            font-size: 1.2rem;
             flex-shrink: 0;
         }
+        .step-content { flex: 1; }
 
-        .step-content { flex-grow: 1; }
-
-        /* Image Placeholders (Simulation) */
-        .screenshot-area {
-            border: 2px dashed #cbd5e1;
-            background-color: #f8fafc;
-            padding: 40px;
-            text-align: center;
+        /* --- FAKE SCREENSHOTS (MOCKUPS) --- */
+        /* C'est ici que la magie opère : on dessine l'interface en CSS */
+        .mockup-window {
+            background: #fff;
+            border: 1px solid #cbd5e1;
             border-radius: 8px;
-            margin: 20px 0;
-            color: #64748b;
-        }
-
-        .screenshot-area i { font-size: 3rem; margin-bottom: 10px; display: block; color: #94a3b8; }
-        .screenshot-label { font-weight: bold; display: block; margin-bottom: 5px; }
-
-        /* Alerts */
-        .alert {
-            padding: 15px;
-            border-left: 4px solid;
-            border-radius: 0 4px 4px 0;
-            margin: 20px 0;
-        }
-
-        .alert-warning { background: #fffbeb; border-color: var(--accent); color: #92400e; }
-        .alert-danger { background: #fef2f2; border-color: var(--danger); color: #991b1b; }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: #64748b;
-            font-size: 0.9rem;
-            margin-top: 50px;
-            border-top: 1px solid #e2e8f0;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin: 25px 0;
+            font-family: sans-serif;
         }
         
-        @media (max-width: 768px) {
-            .sidebar { display: none; }
-            .main-content { margin-left: 0; padding: 20px; }
+        .mockup-header {
+            background: #e2e8f0;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #cbd5e1;
+        }
+        
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .red { background: #ef4444; } .yellow { background: #f59e0b; } .green { background: #10b981; }
+        .url-bar { 
+            background: white; 
+            flex: 1; 
+            margin-left: 10px; 
+            padding: 4px 10px; 
+            border-radius: 4px; 
+            font-size: 0.8rem; 
+            color: #64748b; 
+        }
+
+        .mockup-body {
+            padding: 30px;
+            background: #f8fafc;
+        }
+
+        /* Mockup Login */
+        .fake-login-form {
+            max-width: 300px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .fake-input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-family: monospace;
+        }
+        .fake-btn {
+            background: #ef4444; /* Rouge Mutillidae */
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .injected-text {
+            border-color: var(--primary);
+            background-color: #eff6ff;
+            color: #1e40af;
+            font-weight: bold;
+        }
+
+        /* Mockup Table */
+        .fake-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            background: white;
+        }
+        .fake-table th { background: #333; color: white; padding: 8px; text-align: left; }
+        .fake-table td { border: 1px solid #ddd; padding: 8px; font-family: monospace; }
+        .highlight-row { background-color: #fef3c7; }
+
+        /* --- ALERTS --- */
+        .alert {
+            padding: 15px;
+            border-left: 5px solid;
+            border-radius: 4px;
+            margin: 20px 0;
+            background: #fff;
+        }
+        .alert-info { border-color: var(--primary); background: #eff6ff; color: #1e3a8a; }
+        .alert-warning { border-color: var(--accent); background: #fff7ed; color: #9a3412; }
+
+        /* --- FOOTER --- */
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
 
-    <nav class="sidebar">
-        <h2><i class="fa-solid fa-bug"></i> SecuLab</h2>
-        <ul class="nav-links">
-            <li><a href="#intro"><i class="fa-solid fa-home"></i> Introduction</a></li>
-            <li><a href="#download"><i class="fa-solid fa-download"></i> 1. Téléchargements</a></li>
-            <li><a href="#install"><i class="fa-solid fa-gears"></i> 2. Installation & Config</a></li>
-            <li><a href="#init"><i class="fa-solid fa-play"></i> 3. Initialisation</a></li>
-            <li><a href="#bypass"><i class="fa-solid fa-unlock"></i> 4. Login Bypass</a></li>
-            <li><a href="#extract"><i class="fa-solid fa-database"></i> 5. Vol de Données</a></li>
-            <li><a href="#fix"><i class="fa-solid fa-shield-halved"></i> 6. Correction (Dev)</a></li>
-        </ul>
-    </nav>
-
-    <div class="main-content">
-        
-        <header id="intro">
-            <h1>TP Complet : Injection SQL</h1>
-            <p class="subtitle">De l'installation à l'exploitation sur Mutillidae II</p>
-            <div style="margin-top: 20px;">
-                <span style="background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9rem;">
-                    <i class="fa-solid fa-clock"></i> Durée : 3h00
-                </span>
-                <span style="background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; margin-left: 10px;">
-                    <i class="fa-solid fa-user-graduate"></i> Niv : Technicien Spécialisé
-                </span>
+    <div class="container">
+        <header>
+            <h1>TP : Injection SQL</h1>
+            <div class="subtitle">Guide pratique de A à Z sur Mutillidae II</div>
+            <div class="badges">
+                <span class="badge"><i class="fa-solid fa-graduation-cap"></i> Dev. Digital</span>
+                <span class="badge"><i class="fa-regular fa-clock"></i> 2h30</span>
+                <span class="badge"><i class="fa-solid fa-server"></i> Localhost</span>
             </div>
         </header>
 
-        <section id="download">
-            <h2>1. Ressources et Téléchargements</h2>
-            <p>Avant de commencer, téléchargez les outils nécessaires. Ne les installez pas tout de suite, attendez l'étape 2.</p>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
-                <div style="background: #f1f5f9; padding: 20px; border-radius: 8px; text-align: center;">
-                    <i class="fa-solid fa-server fa-3x" style="color: #f97316;"></i>
-                    <h3>Serveur XAMPP</h3>
-                    <p>Contient Apache (Web) et MySQL (Base de données).</p>
-                    <a href="https://www.apachefriends.org/fr/download.html" target="_blank" class="btn btn-download">
-                        <i class="fa-brands fa-windows"></i> Télécharger XAMPP
-                    </a>
-                </div>
+        <nav class="nav-menu">
+            <a href="#setup" class="nav-btn"><i class="fa-solid fa-download"></i> Installation</a>
+            <a href="#bypass" class="nav-btn"><i class="fa-solid fa-unlock"></i> Login Bypass</a>
+            <a href="#extract" class="nav-btn"><i class="fa-solid fa-database"></i> Vol de Données</a>
+            <a href="#fix" class="nav-btn"><i class="fa-solid fa-shield-halved"></i> Correction</a>
+        </nav>
 
-                <div style="background: #f1f5f9; padding: 20px; border-radius: 8px; text-align: center;">
-                    <i class="fa-brands fa-github fa-3x" style="color: #333;"></i>
-                    <h3>Mutillidae II</h3>
-                    <p>Le site web vulnérable (Code Source).</p>
-                    <a href="https://github.com/webpwnized/mutillidae/archive/refs/heads/master.zip" class="btn btn-download">
-                        <i class="fa-solid fa-file-zipper"></i> Télécharger le ZIP
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <section id="install">
-            <h2>2. Installation et Configuration "Anti-Bug"</h2>
-            <div class="alert alert-warning">
-                <i class="fa-solid fa-triangle-exclamation"></i> <strong>Attention :</strong> Suivez ces étapes scrupuleusement pour éviter les erreurs liées à PHP 8.
-            </div>
+        <section id="setup">
+            <h2><i class="fa-solid fa-toolbox"></i> 1. Installation du Laboratoire</h2>
+            <p>Suivez ces étapes précisément pour éviter les bugs techniques.</p>
 
             <div class="step">
-                <div class="step-number">1</div>
+                <div class="step-num">1</div>
                 <div class="step-content">
-                    <strong>Installer XAMPP</strong><br>
-                    Lancez l'installateur XAMPP. Installez-le à la racine par défaut : <code>C:\xampp</code>.<br>
-                    Une fois fini, ouvrez le <strong>XAMPP Control Panel</strong>.
+                    <h3>Téléchargements</h3>
+                    <div class="download-grid">
+                        <div class="dl-card">
+                            <i class="fa-brands fa-windows fa-3x" style="color:#0ea5e9;"></i>
+                            <h4>Serveur XAMPP</h4>
+                            <p>Installez-le à la racine <code>C:\xampp</code>.</p>
+                            <a href="https://www.apachefriends.org/fr/download.html" target="_blank" class="btn-action">Télécharger</a>
+                        </div>
+                        <div class="dl-card">
+                            <i class="fa-brands fa-github fa-3x" style="color:#333;"></i>
+                            <h4>Mutillidae (Code)</h4>
+                            <p>Le site vulnérable à tester.</p>
+                            <a href="https://github.com/webpwnized/mutillidae/archive/refs/heads/master.zip" class="btn-action">Télécharger ZIP</a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="step">
-                <div class="step-number">2</div>
+                <div class="step-num">2</div>
                 <div class="step-content">
-                    <strong>Nettoyer la configuration PHP (Important !)</strong><br>
-                    Dans XAMPP, cliquez sur le bouton <strong>Config</strong> (sur la ligne Apache) puis <strong>php.ini</strong>.<br>
-                    Une fenêtre Bloc-notes s'ouvre. Faites <code>Ctrl+F</code> pour trouver la ligne :
-                    <pre>display_errors = On</pre>
-                    Remplacez <code>On</code> par <code>Off</code> pour obtenir :
-                    <pre>display_errors = Off</pre>
-                    Enregistrez le fichier, fermez-le, puis cliquez sur <strong>Start</strong> devant Apache et MySQL.
-                </div>
-            </div>
-
-            <div class="step">
-                <div class="step-number">3</div>
-                <div class="step-content">
-                    <strong>Déployer Mutillidae</strong><br>
+                    <h3>Configuration "Anti-Bug"</h3>
+                    <p>Pour éviter les erreurs PHP 8, modifiez la configuration :</p>
                     <ol>
-                        <li>Ouvrez le fichier ZIP <code>mutillidae-master.zip</code> téléchargé.</li>
-                        <li>Copiez le dossier contenu à l'intérieur vers <code>C:\xampp\htdocs\</code>.</li>
-                        <li>Renommez ce dossier en <code>mutillidae</code>.</li>
-                        <li>Allez dans <code>C:\xampp\htdocs\mutillidae\</code> et <strong>supprimez le fichier .htaccess</strong> s'il existe.</li>
+                        <li>Ouvrez le panneau XAMPP.</li>
+                        <li>Cliquez sur <strong>Config</strong> (Apache) > <strong>php.ini</strong>.</li>
+                        <li>Changez <code>display_errors = On</code> en <code>display_errors = Off</code>.</li>
+                        <li>Décompressez le site dans <code>C:\xampp\htdocs\mutillidae</code>.</li>
+                        <li><strong>Important :</strong> Supprimez le fichier <code>.htaccess</code> dans ce dossier.</li>
                     </ol>
                 </div>
             </div>
 
             <div class="step">
-                <div class="step-number">4</div>
+                <div class="step-num">3</div>
                 <div class="step-content">
-                    <strong>Connecter la Base de Données</strong><br>
-                    Ouvrez le fichier <code>C:\xampp\htdocs\mutillidae\includes\database-config.php</code> avec un éditeur de texte (Bloc-notes ou VS Code). Vérifiez les lignes suivantes :
-                    <pre>
-$dbHost = '127.0.0.1';
-$dbUser = 'root';
-$dbPassword = ''; // Laisser vide
-$dbName = 'mutillidae4';</pre>
+                    <h3>Génération des Données</h3>
+                    <p>Cliquez sur le lien ci-dessous pour créer automatiquement la base de données :</p>
+                    <a href="http://localhost/mutillidae/set-up-database.php" target="_blank" class="btn-action" style="background:var(--success);">
+                        <i class="fa-solid fa-rocket"></i> Lancer l'installation BDD
+                    </a>
                 </div>
-            </div>
-        </section>
-
-        <section id="init">
-            <h2>3. Initialisation des Données</h2>
-            <p>Nous allons maintenant demander au script de créer les faux utilisateurs et les données vulnérables.</p>
-            
-            <p>1. Cliquez sur le bouton ci-dessous pour lancer l'installation automatique :</p>
-            <a href="http://localhost/mutillidae/set-up-database.php" target="_blank" class="btn">
-                <i class="fa-solid fa-magic"></i> Setup Database
-            </a>
-            
-            <p style="margin-top:15px;">2. Une fois le message "Tables created" affiché, accédez à la page d'accueil :</p>
-            <a href="http://localhost/mutillidae" target="_blank" class="btn">
-                <i class="fa-solid fa-globe"></i> Accéder au Site
-            </a>
-
-            <div class="screenshot-area">
-                <i class="fa-solid fa-camera"></i>
-                <span class="screenshot-label">Capture d'écran 1</span>
-                <p>Prenez une capture de la page d'accueil de Mutillidae prouvant que le site fonctionne.</p>
             </div>
         </section>
 
         <section id="bypass">
-            <h2>4. Attaque A : Login Bypass</h2>
-            <p><strong>Objectif :</strong> Se connecter en administrateur sans mot de passe.</p>
-            <p><strong>Chemin :</strong> OWASP 2017 > A1 Injection > SQL Injection > Bypass Authentication > Login</p>
-
-            <h3>La Procédure</h3>
-            <ol>
-                <li>Allez sur la page de Login.</li>
-                <li>Dans le champ <strong>Name</strong>, insérez le payload ci-dessous :</li>
-            </ol>
-            <pre>admin' OR 1=1 -- </pre>
-            <div class="alert alert-danger">
-                <strong>Attention :</strong> N'oubliez pas l'espace après les deux tirets !
+            <h2><i class="fa-solid fa-user-secret"></i> 2. Exercice A : Login Bypass</h2>
+            <div class="alert alert-info">
+                <strong>Objectif :</strong> Se connecter sans connaître le mot de passe en manipulant la requête SQL.
             </div>
 
-            <div class="screenshot-area">
-                <i class="fa-solid fa-user-secret"></i>
-                <span class="screenshot-label">Capture d'écran 2</span>
-                <p>Insérez ici la capture prouvant que vous êtes connecté ("You are logged in as admin").</p>
+            <h3>La Procédure</h3>
+            <p>1. Allez dans le menu : <em>OWASP 2017 > Injection > SQL Injection > Bypass Auth > Login</em>.</p>
+            <p>2. Dans le formulaire, injectez le code suivant :</p>
+            <pre>admin' OR 1=1 -- </pre>
+            <p><small>(N'oubliez pas l'espace à la fin !)</small></p>
+
+            <h3>Résultat Attendu</h3>
+            <p>Si l'attaque réussit, voici ce que vous devriez voir à l'écran :</p>
+
+            <div class="mockup-window">
+                <div class="mockup-header">
+                    <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                    <div class="url-bar">localhost/mutillidae/index.php?page=login.php</div>
+                </div>
+                <div class="mockup-body">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <h2 style="justify-content:center; color:#333; border:none;">Login Page</h2>
+                    </div>
+                    
+                    <div class="fake-login-form">
+                        <label>Name</label>
+                        <input type="text" class="fake-input injected-text" value="admin' OR 1=1 -- " readonly>
+                        
+                        <label>Password</label>
+                        <input type="password" class="fake-input" placeholder="(vide)" readonly>
+                        
+                        <button class="fake-btn">Login</button>
+                    </div>
+
+                    <div style="margin-top: 20px; text-align: center; color: var(--success); font-weight: bold; font-size: 1.2rem;">
+                        <i class="fa-solid fa-check-circle"></i> You are logged in as Admin
+                    </div>
+                </div>
             </div>
         </section>
 
         <section id="extract">
-            <h2>5. Attaque B : Extraction de Données</h2>
-            <p><strong>Objectif :</strong> Voler la liste des utilisateurs et mots de passe via <code>UNION SELECT</code>.</p>
-            <p><strong>Chemin :</strong> OWASP 2017 > A1 Injection > SQL Injection > Extract Data > User Info</p>
+            <h2><i class="fa-solid fa-database"></i> 3. Exercice B : Vol de Données</h2>
+            <div class="alert alert-warning">
+                <strong>Scénario :</strong> Nous allons extraire la liste des utilisateurs cachés dans la base de données.
+            </div>
 
-            <h3>Étape 1 : Identifier les colonnes</h3>
-            <p>Injectez ceci dans le champ Name pour voir où les données s'affichent :</p>
-            <pre>' UNION SELECT 1, 2, 3, 4, 5 -- </pre>
-            <p><em>Notez les chiffres qui s'affichent à l'écran (ex: 2 et 3).</em></p>
-
-            <h3>Étape 2 : Le Dump Final</h3>
-            <p>Injectez ce code pour extraire les données de la table <code>accounts</code> :</p>
+            <h3>Payload d'attaque (UNION)</h3>
+            <p>Copiez ce code dans le champ de recherche "User Info" :</p>
             <pre>' UNION SELECT 1, username, password, 4, 5 FROM accounts -- </pre>
 
-            <div class="screenshot-area">
-                <i class="fa-solid fa-id-card"></i>
-                <span class="screenshot-label">Capture d'écran 3</span>
-                <p>Insérez ici la capture montrant la liste des utilisateurs et des hashs de mots de passe.</p>
+            <h3>Résultat Attendu (Simulation)</h3>
+            <p>Le site affichera le contenu de la table <code>accounts</code> :</p>
+
+            <div class="mockup-window">
+                <div class="mockup-header">
+                    <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                    <div class="url-bar">Résultat de l'extraction</div>
+                </div>
+                <div class="mockup-body">
+                    <table class="fake-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Password (Hash)</th>
+                                <th>Signature</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="highlight-row">
+                                <td>1</td>
+                                <td><strong>admin</strong></td>
+                                <td>5f4dcc3b5aa765d61d8327deb882cf99</td>
+                                <td>Admin Signature</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>adrian</td>
+                                <td>8c6976e5b5410415bde908bd4dee15df</td>
+                                <td>Zombie Lover</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>john</td>
+                                <td>e99a18c428cb38d5f260853678922e03</td>
+                                <td>Monkey</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
         <section id="fix">
-            <h2>6. Défense : Sécurisation du Code</h2>
-            <p>En tant que développeur, vous devez corriger la faille dans le code PHP.</p>
+            <h2><i class="fa-solid fa-shield-virus"></i> 4. La Correction (Défense)</h2>
+            <p>En tant que développeur, vous devez sécuriser le code PHP en utilisant <strong>PDO (Prepared Statements)</strong>.</p>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div>
-                    <h4 style="color: var(--danger);">❌ Code Vulnérable</h4>
-                    <pre>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+                <div style="border: 1px solid #fecaca; background: #fef2f2; padding: 20px; border-radius: 8px;">
+                    <h4 style="color: #991b1b; margin-top:0;"><i class="fa-solid fa-xmark"></i> Code Vulnérable</h4>
+                    <p>Concaténation directe des variables.</p>
+                    <pre style="background: #450a0a;">
 $user = $_POST['name'];
-// Concaténation directe
 $sql = "SELECT * FROM users WHERE n='" . $user . "'";
-$res = $db->query($sql);
-                    </pre>
+$res = $db->query($sql);</pre>
                 </div>
-                <div>
-                    <h4 style="color: var(--success);">✅ Code Sécurisé (PDO)</h4>
-                    <pre>
+
+                <div style="border: 1px solid #bbf7d0; background: #f0fdf4; padding: 20px; border-radius: 8px;">
+                    <h4 style="color: #166534; margin-top:0;"><i class="fa-solid fa-check"></i> Code Sécurisé</h4>
+                    <p>Utilisation de `prepare` et `execute`.</p>
+                    <pre style="background: #052e16;">
 $user = $_POST['name'];
-// Requête préparée
-$stmt = $pdo->prepare("SELECT * FROM users WHERE n=?");
-$stmt->execute([$user]);
-$res = $stmt->fetchAll();
-                    </pre>
+$sql = "SELECT * FROM users WHERE n = ?";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$user]);</pre>
                 </div>
             </div>
-            <p><strong>Explication :</strong> Les requêtes préparées séparent la structure SQL des données, empêchant l'injection.</p>
         </section>
 
         <footer>
-            <p>TP réalisé pour le module Développement Digital - Sécurité des Applications Web.</p>
-            <p>Ne pas utiliser ces techniques sur des serveurs en production sans autorisation.</p>
+            <p>TP Développement Digital - Sécurité des Applications Web</p>
+            <p>Généré pour usage éducatif uniquement.</p>
         </footer>
-
     </div>
 
-    <script>
-        // Smooth scrolling for sidebar links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
-    </script>
 </body>
 </html>
